@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three-Tier App</title>
+</head>
+<body>
+    <h1>Items</h1>
+    <ul id="itemList"></ul>
+    <input type="text" id="itemName" placeholder="Item Name">
+    <input type="text" id="itemDescription" placeholder="Item Description">
+    <button id="addItem">Add Item</button>
+
+    <script>
+        const itemList = document.getElementById('itemList');
+        const itemName = document.getElementById('itemName');
+        const itemDescription = document.getElementById('itemDescription');
+        const addItemButton = document.getElementById('addItem');
+
+        const fetchItems = async () => {
+            const response = await fetch('/api/items');
+            const items = await response.json();
+            itemList.innerHTML = items.map(item => `<li>${item.name}: ${item.description}</li>`).join('');
+        };
+
+        const addItem = async () => {
+            const newItem = {
+                name: itemName.value,
+                description: itemDescription.value
+            };
+            await fetch('/api/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newItem)
+            });
+            itemName.value = '';
+            itemDescription.value = '';
+            fetchItems();
+        };
+
+        addItemButton.addEventListener('click', addItem);
+        fetchItems();
+    </script>
+</body>
+</html>
